@@ -117,7 +117,7 @@ const char Kmorsev[][MAXMORSELENGTH] = {
 };
                          
                          
-#define DOT_MS_LEN 100    // "BASE" DOT LENGTH: This is the main 'dot' length which all
+#define DOT_MS_LEN 80    // "BASE" DOT LENGTH: This is the main 'dot' length which all
                           // the other delay/durations are based on.
                           // Decrease it, to make it playing faster.
                           // Increase it, to make it slower.
