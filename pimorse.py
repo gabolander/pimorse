@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-import RPi.GPIO as GPIO
 import time
+import sys, getopt, os, re
 
 BeepPin = 11    # pin11
 # MotorPin1   = 11    # pin11
@@ -20,6 +20,7 @@ DELAY_MS_DOTS=(DOT_MS_LEN*1)
 DELAY_MS_LETTERS=(DOT_MS_LEN*3)
 DELAY_MS_WORDS=(DOT_MS_LEN*5)
 
+# Global vars
 default_msg = "Hello, world!"
 
 Kalfav = [ 'A','B','C','D','E','F','G','H','I','J',
@@ -39,19 +40,27 @@ Kmorsev = [
     "-.--.-",".-..-.",".----.","-..-.","..--.-",".--.-.","-.-.--" # Symbols
     ]
 
+Simulate = False
+Dot_ms_len = 0.08
+
 def soundmorse(seq):
+    global Simulate, Dot_ms_len
     Index=0
     while Index<len(seq):
         sign=seq[Index]
-        GPIO.output(BeepPin, GPIO.LOW)
+        if not(Simulate):
+            GPIO.output(BeepPin, GPIO.LOW)
         if sign=='-':
+            # print "time.sleep(",DASH_MS_LEN,")" # GABODebug
             time.sleep(DASH_MS_LEN)
         else:
+            # print "time.sleep(",DOT_MS_LEN,")" # GABODebug
             time.sleep(DOT_MS_LEN)
+        if not(Simulate):
+            GPIO.output(BeepPin, GPIO.HIGH)
 
-        GPIO.output(BeepPin, GPIO.HIGH)
         time.sleep(DELAY_MS_DOTS)
-
+        Index=Index+1
     # Delay at end of letter
     time.sleep(DELAY_MS_LETTERS-DELAY_MS_DOTS)
     return 1
@@ -69,13 +78,32 @@ def morse_decode(letter):
     else:
         return Kmorsev[Index]
 
-
-
 def setup():
-    GPIO.setwarnings(False)
-    GPIO.setmode(GPIO.BOARD)        # Numbers GPIOs by physical location
-    GPIO.setup(BeepPin, GPIO.OUT)   # Set BeepPin's mode is output
-    GPIO.output(BeepPin, GPIO.HIGH) # Set BeepPin high(+3.3V) to off beep
+    global Simulate, Dot_ms_len
+
+    if Dot_ms_len != 0.08:
+        tmp = re.findall(r"[-+]?\d*\.\d+|\d+", Dot_ms_len)
+        # print "Found in Dot_ms_len : [", tmp[0], "] " # GABODebug
+        if len(tmp)==0:
+            print "Float not found in 'dot' parameter.  The value of 0.08 has been restored."
+            Dot_ms_len=0.08
+        else:
+            Dot_ms_len=float(tmp[0])
+            if Dot_ms_len < 0.05 or Dot_ms_len > 0.2:
+                print "required DOT_MS_LEN out of bounds. The value of 0.08 has been restored."
+                Dot_ms_len=0.08
+
+        DOT_MS_LEN=Dot_ms_len
+        DASH_MS_LEN=(DOT_MS_LEN*3)
+        DELAY_MS_DOTS=(DOT_MS_LEN*1)
+        DELAY_MS_LETTERS=(DOT_MS_LEN*3)
+        DELAY_MS_WORDS=(DOT_MS_LEN*5)
+
+    if not(Simulate):
+        GPIO.setwarnings(False)
+        GPIO.setmode(GPIO.BOARD)        # Numbers GPIOs by physical location
+        GPIO.setup(BeepPin, GPIO.OUT)   # Set BeepPin's mode is output
+        GPIO.output(BeepPin, GPIO.HIGH) # Set BeepPin high(+3.3V) to off beep
 
 def loop():
     while True:
@@ -97,17 +125,52 @@ def loop():
             print '\n'
 
 def destroy():
-    GPIO.output(BeepPin, GPIO.HIGH)    # beep off
-    GPIO.cleanup()                     # Release resource
+    global Simulate, Dot_ms_len
+    if not (Simulate):
+        GPIO.output(BeepPin, GPIO.HIGH)    # beep off
+        GPIO.cleanup()                     # Release resource
 
-if __name__ == '__main__':     # Program start from here
-    print 'Press Ctrl+C to end the program...'
+def usage():
+    print os.path.basename(os.path.basename(sys.argv[0])), "[options]"
+    print
+    print "Options: "
+    print " -h | --help       Shows this help"
+    print " -s | --simulate   Allow to test program without RaspberriPI"
+    print " -d <dot_lenth>  "
+    print " --dot=<dot_lenth> Length in seconds of dots (default=0.08) "
+    print
+
+
+def main(argv):
+    global Simulate, Dot_ms_len
+
+    try:
+      opts, args = getopt.getopt(argv,"hsd:",["help","simulate","dot=","ifile=","ofile="])
+    except getopt.GetoptError:
+      print os.path.basename(os.path.basename(sys.argv[0]))+' Error: Usage: '
+      usage()
+      sys.exit(2)
+    for opt, arg in opts:
+      if opt in ("-h", "--help" ):
+         usage()
+         sys.exit()
+      elif opt in ("-d", "--dot"):
+         Dot_ms_len = arg
+      elif opt in ("-s", "--simulate"):
+         Simulate = True
+
+    if Simulate != True:
+        import RPi.GPIO as GPIO
+    # print 'Press Ctrl+C to end the program...'
     setup()
     try:
         loop()
         destroy()
     except KeyboardInterrupt:  # When 'Ctrl+C' is pressed, the child program destroy() will be  executed.
         destroy()
+
+if __name__ == '__main__':     # Program start from here
+    main(sys.argv[1:])
 
 # ex: ts=4 sts=4 sw=4 ai nohls mouse-=a ft=python et:
 # ex: tabstop=4 softtabstop=4 shiftwidth=4 autoindent mouse-=a filetype=python expandtab:
