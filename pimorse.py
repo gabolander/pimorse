@@ -159,7 +159,7 @@ def main(argv):
       elif opt in ("-s", "--simulate"):
          Simulate = True
 
-    if Simulate != True:
+    if not(Simulate):
         import RPi.GPIO as GPIO
     # print 'Press Ctrl+C to end the program...'
     setup()

@@ -10,6 +10,8 @@ Circuit to mount on the breadboard is right this one:
 
 ![Buzzer](https://www.sunfounder.com/media/wysiwyg/swatches/Super_kit_v2_for_raspberrypi/6_Buzzer/5.png)
 
+## C Source - pimorse.c
+
 ### Build program to run with Raspberry PI and the buzzer scheme on the breadboard
 To build this program under Raspbian in a Raspberry Pi environment, you fist need to have wiringPi library installed.
 To download and install wiringPi library, please follow this link: [WiringPi Library - download and install](http://wiringpi.com/download-and-install/)
@@ -33,6 +35,29 @@ In this case you can compile program by entering:
  `$ gcc pimorse.c -o pimorse -DNOPI -DDEBUG`
 
 ( DEBUG is optional here as well, but I suggest you to use it together with -DNOPI parameter, otherwise you can't realize the progress of program, since you don't have any audio output. At least, in this way you may see console output when program converts message to morse, with the same timings as you had buzzer playback. )
+
+
+## Python program - pimorse.py
+
+It has just almost the same behaviour of corresponding C program mentioned above.
+
+Run with
+
+	`./pimorse.py`
+
+	_NOTE: You may check the first line `#!/usr/bin/env python` and eventually change env path according to your system configuration._
+
+	If you want to test program with no breadboard or circuit attached or just run in your PC, you could just run it with:
+
+	`./pimorse.py -s` or `./pimorse.py --simulate`
+
+	In this way, no GPIO library will be called as imported modules.
+
+	You may also change dot beep duration by issuing --dot=NN parameter, where NN stands for seconds (NOTE: enter a fraction of second. Accepted value range is between 0.05 and 0.2 [default is 0.08])
+
+	Anyway, you may always run `./pimorse.py -h` to see an help screen for command parameters.
+
+
 
 **License**
 This source is released under the terms of *GNU General Public License V. 3.0.*
