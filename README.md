@@ -43,19 +43,19 @@ It has just almost the same behaviour of corresponding C program mentioned above
 
 Run with
 
-	`./pimorse.py`
+	./pimorse.py
 
-	_NOTE: You may check the first line `#!/usr/bin/env python` and eventually change env path according to your system configuration._
+_NOTE: You may check the first line `#!/usr/bin/env python` and eventually change env path according to your system configuration._
 
-	If you want to test program with no breadboard or circuit attached or just run in your PC, you could just run it with:
+If you want to test program with no breadboard or circuit attached or just run in your PC, you could just run it with:
 
-	`./pimorse.py -s` or `./pimorse.py --simulate`
+`./pimorse.py -s` or `./pimorse.py --simulate`
 
-	In this way, no GPIO library will be called as imported modules.
+In this way, no GPIO library will be called as imported modules.
 
-	You may also change dot beep duration by issuing --dot=NN parameter, where NN stands for seconds (NOTE: enter a fraction of second. Accepted value range is between 0.05 and 0.2 [default is 0.08])
+You may also change dot beep duration by issuing _--dot=NN_ parameter, where _NN_ stands for seconds (**NOTE**: enter a fraction of second. Accepted value range is between 0.05 and 0.2 [default is 0.08])
 
-	Anyway, you may always run `./pimorse.py -h` to see an help screen for command parameters.
+Anyway, you may always run `./pimorse.py -h` to see an help screen for command parameters.
 
 
 
