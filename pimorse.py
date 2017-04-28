@@ -45,6 +45,11 @@ Dot_ms_len = 0.08
 
 def soundmorse(seq):
     global Simulate, Dot_ms_len
+    if not(Simulate):
+        import RPi.GPIO as GPIO
+    if seq==" ":
+        time.sleep(DELAY_MS_WORDS)
+        return 1
     Index=0
     while Index<len(seq):
         sign=seq[Index]
@@ -100,6 +105,7 @@ def setup():
         DELAY_MS_WORDS=(DOT_MS_LEN*5)
 
     if not(Simulate):
+        import RPi.GPIO as GPIO
         GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BOARD)        # Numbers GPIOs by physical location
         GPIO.setup(BeepPin, GPIO.OUT)   # Set BeepPin's mode is output
@@ -127,6 +133,7 @@ def loop():
 def destroy():
     global Simulate, Dot_ms_len
     if not (Simulate):
+        import RPi.GPIO as GPIO
         GPIO.output(BeepPin, GPIO.HIGH)    # beep off
         GPIO.cleanup()                     # Release resource
 
