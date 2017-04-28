@@ -42,9 +42,10 @@ Kmorsev = [
 
 Simulate = False
 Dot_ms_len = 0.08
+DEBUG = False
 
 def soundmorse(seq):
-    global Simulate, Dot_ms_len
+    global Simulate, Dot_ms_len, DEBUG
     if not(Simulate):
         import RPi.GPIO as GPIO
     if seq==" ":
@@ -56,10 +57,12 @@ def soundmorse(seq):
         if not(Simulate):
             GPIO.output(BeepPin, GPIO.LOW)
         if sign=='-':
-            # print "time.sleep(",DASH_MS_LEN,")" # GABODebug
+            #if DEBUG:
+            #    print "time.sleep(",DASH_MS_LEN,")"
             time.sleep(DASH_MS_LEN)
         else:
-            # print "time.sleep(",DOT_MS_LEN,")" # GABODebug
+            #if DEBUG:
+            #    print "time.sleep(",DOT_MS_LEN,")"
             time.sleep(DOT_MS_LEN)
         if not(Simulate):
             GPIO.output(BeepPin, GPIO.HIGH)
@@ -112,6 +115,7 @@ def setup():
         GPIO.output(BeepPin, GPIO.HIGH) # Set BeepPin high(+3.3V) to off beep
 
 def loop():
+    global DEBUG
     while True:
             message = raw_input("Enter a message to transmit (\""+default_msg+"\" default message, \"STOP\" to exit) : " )
             if message == "STOP":
@@ -120,12 +124,14 @@ def loop():
             if message == "":
                 message = default_msg
 
-            # print "message: ", message
+            if DEBUG:
+                print "message: ", message
             Index=0
             while Index<len(message):
                 letter=message.upper()[Index]
                 morseseq=morse_decode(letter)
-                print "letter: ", letter, " morse seq: ", morseseq # GABODebug
+                if DEBUG:
+                    print "letter: ", letter, " morse seq: ", morseseq
                 soundmorse(morseseq)
                 Index=Index+1
             print '\n'
@@ -145,14 +151,15 @@ def usage():
     print " -s | --simulate   Allow to test program without RaspberriPI"
     print " -d <dot_lenth>  "
     print " --dot=<dot_lenth> Length in seconds of dots (default=0.08) "
+    print " -D | --debug      Add more verbosity to program "
     print
 
 
 def main(argv):
-    global Simulate, Dot_ms_len
+    global Simulate, Dot_ms_len, DEBUG
 
     try:
-      opts, args = getopt.getopt(argv,"hsd:",["help","simulate","dot=","ifile=","ofile="])
+      opts, args = getopt.getopt(argv,"hsd:D",["help","simulate","dot=","debug"])
     except getopt.GetoptError:
       print os.path.basename(os.path.basename(sys.argv[0]))+' Error: Usage: '
       usage()
@@ -165,6 +172,8 @@ def main(argv):
          Dot_ms_len = arg
       elif opt in ("-s", "--simulate"):
          Simulate = True
+      elif opt in ("-D", "--debug" ):
+         DEBUG = True
 
     if not(Simulate):
         import RPi.GPIO as GPIO
