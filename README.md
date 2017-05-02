@@ -20,11 +20,16 @@ To compile and run this program, do:
 
  `$ gcc pimorse.c -o pimorse -l wiringPi [ -DDEBUG ]`
 
+or just run:
+
+ `make [ debug ]`
+
 (DEBUG is optional, just to have more verbosity during execution)
 
 and run with:
 
  `$ ./pimorse`
+
 
 ### Build program to run in a PC for simulation
 You may also want to run this program in a linux PC, out of a 
@@ -34,8 +39,11 @@ In this case you can compile program by entering:
 
  `$ gcc pimorse.c -o pimorse -DNOPI -DDEBUG`
 
-( DEBUG is optional here as well, but I suggest you to use it together with -DNOPI parameter, otherwise you can't realize the progress of program, since you don't have any audio output. At least, in this way you may see console output when program converts message to morse, with the same timings as you had buzzer playback. )
+or just run:
 
+ `make simdebug`
+
+( DEBUG is optional here as well, but I suggest you to use it together with -DNOPI parameter, otherwise you can't realize the progress of program, since you don't have any audio output. At least, in this way you may see console output when program converts message to morse, with the same timings as you had buzzer playback. )
 
 ## Python program - pimorse.py
 

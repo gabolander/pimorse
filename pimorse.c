@@ -169,15 +169,16 @@ void delay(long millis) {
 
 void  INThandler(int sig)
 {
-            
-    int i;
+#if 0
     char  c;
+#endif
 
     signal(sig, SIG_IGN);
     printf("You hit Ctrl-C?\n"
             "Switching off buzzer and exiting.\n "); // Gabo
     digitalWrite(BeepPin, HIGH);
     exit(0);
+
 #if 0
     printf("OUCH, did you hit Ctrl-C?\n"
            "Do you really want to quit? [y/n] ");
@@ -207,14 +208,13 @@ void soundmorse(char c) {
         if(!strcmp(retstring," ")) { // se è uguale a spazio faccio solo la pausa ...
             delay(DELAY_MS_WORDS); // if it's a space, it must place a pause delay at the end of word
         } else {
-            
-			for(i=0;i<strlen(retstring);i++){
-				dl=retstring[i];
-				digitalWrite(BeepPin, LOW);  //beep on
-				delay( (dl=='-') ? DASH_MS_LEN : DOT_MS_LEN );
-				digitalWrite(BeepPin, HIGH); //beep off
-				delay(DELAY_MS_DOTS);        //delay at the and of dot or dash
-			}
+            for(i=0;i<strlen(retstring);i++){
+                dl=retstring[i];
+                digitalWrite(BeepPin, LOW);  //beep on
+                delay( (dl=='-') ? DASH_MS_LEN : DOT_MS_LEN );
+                digitalWrite(BeepPin, HIGH); //beep off
+                delay(DELAY_MS_DOTS);        //delay at the and of dot or dash
+            }
             delay(DELAY_MS_LETTERS-DELAY_MS_DOTS);  //delay at the end of letter
         }
     }
@@ -225,7 +225,7 @@ void tomorse(char * retstring, char c) {
     int i;
     int lenvect=sizeof(Kalfav);
     if (c >= 'a' && c <= 'z')
-            c = c - 'a' + 'A';
+        c = c - 'a' + 'A';
     
     for(i=0;i<lenvect;i++) {
         if(c==Kalfav[i]) break;
@@ -254,7 +254,6 @@ void cleanup_message(char *strtopul) {
 
 int main(void)
 {
-	int i;
         char szMessage[MAXMESSAGELENGTH+3];
 
     signal(SIGINT, INThandler); // GABO. inits INIThandler function on SIGINT
@@ -271,7 +270,7 @@ int main(void)
 #endif
         
 #ifdef DEBUG
-        printf("Sizeof Kalfav = %d \n",sizeof(Kalfav));
+        printf("Sizeof Kalfav = %ld \n",sizeof(Kalfav));
 #endif
 
         while(1){
@@ -283,14 +282,6 @@ int main(void)
             
             cleanup_message(szMessage);
             
-#if 0 
-            // needed only to see ascii values of the input chars in message ..
-            for(i=0;i<strlen(szMessage);i++){
-                printf( "pos %d Car: %c asc: %d \n",i, szMessage[i], szMessage[i] );
-            }
-            putchar('\n');
-#endif
-            
             if( !strcmp(szMessage, "STOP") ) break;
             if( !strcmp(szMessage, "") ) strcpy( szMessage, default_msg);
 
@@ -300,3 +291,5 @@ int main(void)
 
 	return 0;
 }
+
+// ex: ts=4 sts=4 sw=4 nohls expandtab:
